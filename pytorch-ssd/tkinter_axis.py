@@ -36,21 +36,31 @@ class CovidApp(tk.Tk):
         # 評価結果テキストを配置
         ## ウィジェット生成
         self.person_count = tkk.Label(self.evalFrm)
-        self.person_count.configure(text="検出人数：",font=("",40),foreground="black", background="white")
+        self.person_count.configure(text="検出人数：",font=("",30),foreground="black", background="white")
         self.person_count.grid(row=0, column=0, sticky="w")
 
         ## ウィジェット生成
         self.eval_density = tkk.Label(self.evalFrm)
-        self.eval_density.configure(text="密集度　：",font=("",40),foreground="black", background="white")
+        self.eval_density.configure(text="密集度　：",font=("",30),foreground="black", background="white")
         self.eval_density.grid(row=1, column=0, sticky="w")
 
         ## スライダーの作成
         self.eval_density = tkk.Label(self.evalFrm)
-        self.eval_density.configure(text="密集閾値",font=("",40),foreground="black", background="white")
+        self.eval_density.configure(text="密集閾値",font=("",30),foreground="black", background="white")
         self.eval_density.grid(row=2, column=0, sticky="w")
-        self.var = tk.IntVar(master=self.evalFrm,value=3,)
-        self.scale = tk.Scale(master=self.evalFrm, orient="h",variable=self.var,from_=1, to=10,length=300)
-        self.scale.grid(row=2, column=1, sticky="w")
+        self.var_distance = tk.IntVar(master=self.evalFrm,value=3,)
+        self.scale_distace = tk.Scale(master=self.evalFrm, orient="h",variable=self.var_distance,from_=1, to=10,length=350)
+        self.scale_distace.grid(row=2, column=1, sticky="w")
+
+        ## モデル推論の閾値スライダー
+        self.eval_model = tkk.Label(self.evalFrm) 
+        self.eval_model.configure(text="モデル判定閾値",font=("",30),foreground="black", background="white")
+        self.eval_model.grid(row=3, column=0, sticky="w")
+        self.var_model = tk.DoubleVar(master=self.evalFrm,value=0.5,)
+        self.scale_model = tk.Scale(master=self.evalFrm, orient="h",variable=self.var_model,from_=0, to=1,length=350, resolution=0.1)
+        self.scale_model.grid(row=3, column=1, sticky="w")
+
+
         #########################
 
         ### 動画表示フレームの作成 ###
@@ -71,12 +81,13 @@ class CovidApp(tk.Tk):
         '''
         各キャンバスへの画像書き込み(opencvのimshow()的な処理)
         '''
-        print(self.scale.get())
+        print(self.scale_distace.get())
+        print(self.scale_model.get())
         # VideoCaptureクラスのget_frameで画像を取得
         try:
             ret, frame = self.cap.get_frame()
-            frame,cnt = self.detection.eval_frame(frame,self.scale.get())
-            self.person_count.configure(text=("検出人数："+str(cnt)+'人'),font=("",40),foreground="black", background="white")
+            frame,cnt = self.detection.eval_frame(frame,self.scale_distace.get(),self.scale_model.get())
+            self.person_count.configure(text=("検出人数："+str(cnt)+'人'),font=("",30),foreground="black", background="white")
         # 取得できなかったら
         except:
             print('update失敗')
@@ -136,13 +147,13 @@ class Detection():
         print('Detection_init読み込み終了')
 
 
-    def eval_frame(self,img,distance):
+    def eval_frame(self,img,distance,threshold):
         print(distance)
-        boxes, labels, probs = self.predictor.predict(img,10,0.3)
+        boxes, labels, probs = self.predictor.predict(img,10,threshold)
         pos_box = []  #bboxの中心の座標を格納するlist
         for i in range(boxes.size(0)):
             box = boxes[i, :]
-            cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4)
+            #cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4)
             pos_box.append([int((box[0]+box[2])/2), int((box[1]+box[3])/2)])
         #各bboxの中心同士の長さを計算
         #規定値より小さければ、線で結ぶ
@@ -151,6 +162,9 @@ class Detection():
                 box_distance  = (((box_1[0]-box_2[0])**2)+(box_1[1]-box_2[1])**2) ** 0.5
                 if box_distance < distance:
                     cv2.line(img, (box_1[0],box_1[1]),(box_2[0],box_2[1]),(0,255,0),1)
+                    cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4) 
+                else:
+                    cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (255, 0, 0), 4)
             # if self.class_names[labels[i]] =='safe':
             #     label = 'safe' +  f": {probs[i]:.2f}"
             #     cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4)
