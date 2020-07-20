@@ -1,11 +1,12 @@
 # ライブラリのインストール
 import tkinter as tk
+from tkinter import filedialog
 import tkinter.ttk as tkk
 import tkinter.font as font
 import cv2
 import sys
+import os
 import PIL.Image, PIL.ImageTk
-from vision.ssd.vgg_ssd import create_vgg_ssd, create_vgg_ssd_predictor
 from vision.ssd.mobilenetv1_ssd import create_mobilenetv1_ssd, create_mobilenetv1_ssd_predictor
 from vision.utils.misc import Timer
 
@@ -86,20 +87,31 @@ class CovidApp(tk.Tk):
         self.ip_entry = tk.Entry(self.frame1,width=20)
         self.ip_entry.grid(row=0,column=1)
 
-        ### エクスプローラーを開く
-        
+        ### 音ファイル選択
+        self.s = tk.StringVar()
+        self.s.set('ファイル>>')
+        self.label1 = tk.Label(self.frame1, textvariable=self.s, font=("", '30'))
+        self.label1.grid(row=1, column=0)
+        # 参照ファイルパス表示ラベルの作成
+        self.file1 = tk.StringVar()
+        self.file1_entry = tk.Entry(self.frame1, textvariable=self.file1, width=50)
+        self.file1_entry.grid(row=1, column=1)
+        # 参照ボタンの作成
+        self.button1 = tk.Button(self.frame1, text='参照', command=self.button1_clicked)
+        self.button1.grid(row=1, column=2)
 
-
-        # タイトルラベル作成
-        self.titleLabel = tk.Label(self.frame1, text="Frame 1", font=("", '30'))
-        self.titleLabel.grid(sticky='news')
         # フレーム1からmainフレームに戻るボタン
         self.back_button = tk.Button(self.frame1, text="検査開始", command=lambda : self.changePage(self.wrpFrm))
-        self.back_button.grid(sticky='news')
+        self.back_button.grid(row=2, column=0,sticky='news')
         #main_frameを一番上に表示
         self.frame1.tkraise()
         #--------------------------------------------------------------------------
 
+    def button1_clicked(self):
+        fTyp = [("","*")]
+        iDir = os.path.abspath(os.path.dirname(__file__))
+        self.filepath = filedialog.askopenfilename(filetypes = fTyp,initialdir = iDir)
+        self.file1.set(self.filepath)
 
         
 
@@ -107,6 +119,7 @@ class CovidApp(tk.Tk):
         #入力値を得る
         self.ip_adress = self.ip_entry.get()
         print("--------------------",str(self.ip_adress))
+        print("音ファイル",str(self.filepath))
         '''
         画面遷移用の関数
         '''
