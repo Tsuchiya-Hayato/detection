@@ -11,20 +11,23 @@ from vision.utils.misc import Timer
 
 # アプリのクラスを作成
 class CovidApp(tk.Tk):
-    def __init__(self):
-        tk.Tk.__init__(self)
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
         # ウィンドウの名前
         self.title(u"Phoenix Covid")
         # ウィンドウのサイズ
         self.geometry("800x640")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
         # VideoCaptureクラスを使用する
         self.cap = VideoCapture()
         self.detection = Detection()
+
         ### ラッパーフレームの作成 ###
-        self.wrpFrm = tk.Frame(self)
+        self.wrpFrm = tk.Frame()
         self.wrpFrm.configure(bg="white")
         # 縦横ともに3pxの余白で、rootウィンドウいっぱいに配置
-        self.wrpFrm.pack(padx=3, pady=3, fill="both", expand=1)
+        self.wrpFrm.grid(row=0, column=0, sticky="nsew")
         #########################
         
         ### 評価結果フレームの作成 ###
@@ -60,9 +63,6 @@ class CovidApp(tk.Tk):
         self.scale_model = tk.Scale(master=self.evalFrm, orient="h",variable=self.var_model,from_=0, to=1,length=350, resolution=0.1)
         self.scale_model.grid(row=3, column=1, sticky="w")
 
-
-        #########################
-
         ### 動画表示フレームの作成 ###
         self.movieFrm = tk.Frame(self.wrpFrm)
         self.movieFrm.configure(bg="white")
@@ -73,8 +73,32 @@ class CovidApp(tk.Tk):
         self.movie_canvas = tk.Canvas(self.movieFrm, width = self.cap.width, height = self.cap.height)
         self.movie_canvas.pack()
 
+
+        #--------------------------------------------------------------------------
+        ### 初期設定frame ###
+        self.frame1 = tk.Frame()
+        self.frame1.configure(bg="white")
+        self.frame1.grid(row=0, column=0, sticky="nsew")
+        print('===============')
+        # タイトルラベル作成
+        self.titleLabel = tk.Label(self.frame1, text="Frame 1", font=('Helvetica', '35'))
+        self.titleLabel.pack(anchor='center', expand=True)
+        # フレーム1からmainフレームに戻るボタン
+        self.back_button = tk.Button(self.frame1, text="Back", command=lambda : self.changePage(self.wrpFrm))
+        self.back_button.pack()
+        #main_frameを一番上に表示
+        self.frame1.tkraise()
+        #--------------------------------------------------------------------------
+
+
         # 更新作業
         self.update()
+
+    def changePage(self, page):
+        '''
+        画面遷移用の関数
+        '''
+        page.tkraise()
         
         #########################
     def update(self):
