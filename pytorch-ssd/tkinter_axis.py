@@ -79,27 +79,40 @@ class CovidApp(tk.Tk):
         self.frame1 = tk.Frame()
         self.frame1.configure(bg="white")
         self.frame1.grid(row=0, column=0, sticky="nsew")
-        print('===============')
+
+        ### カメラのIP入力
+        self.ip_label = tk.Label(self.frame1, text="カメラのIPアドレスを入力", font=("", '30'))
+        self.ip_label.grid(row=0, column=0)
+        self.ip_entry = tk.Entry(self.frame1,width=20)
+        self.ip_entry.grid(row=0,column=1)
+
+        ### エクスプローラーを開く
+        
+
+
         # タイトルラベル作成
-        self.titleLabel = tk.Label(self.frame1, text="Frame 1", font=('Helvetica', '35'))
-        self.titleLabel.pack(anchor='center', expand=True)
+        self.titleLabel = tk.Label(self.frame1, text="Frame 1", font=("", '30'))
+        self.titleLabel.grid(sticky='news')
         # フレーム1からmainフレームに戻るボタン
-        self.back_button = tk.Button(self.frame1, text="Back", command=lambda : self.changePage(self.wrpFrm))
-        self.back_button.pack()
+        self.back_button = tk.Button(self.frame1, text="検査開始", command=lambda : self.changePage(self.wrpFrm))
+        self.back_button.grid(sticky='news')
         #main_frameを一番上に表示
         self.frame1.tkraise()
         #--------------------------------------------------------------------------
 
 
-        # 更新作業
-        self.update()
+        
 
     def changePage(self, page):
+        #入力値を得る
+        self.ip_adress = self.ip_entry.get()
+        print("--------------------",str(self.ip_adress))
         '''
         画面遷移用の関数
         '''
         page.tkraise()
-        
+        # 更新作業
+        self.update()
         #########################
     def update(self):
         '''
