@@ -17,7 +17,7 @@ class CovidApp(tk.Tk):
         # ウィンドウの名前
         self.title(u"Phoenix Covid")
         # ウィンドウのサイズ
-        self.geometry("800x640")
+        self.geometry("800x680")
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         # VideoCaptureクラスを使用する
@@ -61,7 +61,7 @@ class CovidApp(tk.Tk):
         self.eval_density = tkk.Label(self.threshhold)
         self.eval_density.configure(text="密集閾値",font=("",25),foreground="black", background="white")
         self.eval_density.grid(row=0, column=0, sticky="nsew")
-        self.var_distance = tk.IntVar(master=self.threshhold,value=3,)
+        self.var_distance = tk.IntVar(master=self.threshhold,value=3)
         self.scale_distace = tk.Scale(master=self.threshhold, orient="h",variable=self.var_distance,from_=1, to=10,length=250)
         self.scale_distace.grid(row=1, column=0, sticky="nsew")
 
