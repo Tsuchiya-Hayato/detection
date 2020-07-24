@@ -25,7 +25,7 @@ class CovidApp(tk.Tk):
         self.detection = Detection()
 
         ### ラッパーフレームの作成 ###
-        self.wrpFrm = tk.Frame()
+        self.wrpFrm = tk.Frame(self)
         self.wrpFrm.configure(bg="white")
         # 縦横ともに3pxの余白で、rootウィンドウいっぱいに配置
         self.wrpFrm.grid(row=0, column=0, sticky="nsew")
@@ -41,28 +41,28 @@ class CovidApp(tk.Tk):
         ## ウィジェット生成
         self.person_count = tkk.Label(self.evalFrm)
         self.person_count.configure(text="検出人数：",font=("",30),foreground="black", background="white")
-        self.person_count.grid(row=0, column=0, sticky="w")
+        self.person_count.grid(row=0, column=0, sticky="nsew")
 
         ## ウィジェット生成
         self.eval_density = tkk.Label(self.evalFrm)
         self.eval_density.configure(text="密集度　：",font=("",30),foreground="black", background="white")
-        self.eval_density.grid(row=1, column=0, sticky="w")
+        self.eval_density.grid(row=1, column=0, sticky="nsew")
 
         ## スライダーの作成
         self.eval_density = tkk.Label(self.evalFrm)
         self.eval_density.configure(text="密集閾値",font=("",30),foreground="black", background="white")
-        self.eval_density.grid(row=2, column=0, sticky="w")
+        self.eval_density.grid(row=2, column=0, sticky="nsew")
         self.var_distance = tk.IntVar(master=self.evalFrm,value=3,)
         self.scale_distace = tk.Scale(master=self.evalFrm, orient="h",variable=self.var_distance,from_=1, to=10,length=350)
-        self.scale_distace.grid(row=2, column=1, sticky="w")
+        self.scale_distace.grid(row=2, column=1, sticky="nsew")
 
         ## モデル推論の閾値スライダー
         self.eval_model = tkk.Label(self.evalFrm) 
         self.eval_model.configure(text="モデル判定閾値",font=("",30),foreground="black", background="white")
-        self.eval_model.grid(row=3, column=0, sticky="w")
+        self.eval_model.grid(row=3, column=0, sticky="nsew")
         self.var_model = tk.DoubleVar(master=self.evalFrm,value=0.5,)
         self.scale_model = tk.Scale(master=self.evalFrm, orient="h",variable=self.var_model,from_=0, to=1,length=350, resolution=0.1)
-        self.scale_model.grid(row=3, column=1, sticky="w")
+        self.scale_model.grid(row=3, column=1, sticky="nsew")
 
         ### 動画表示フレームの作成 ###
         self.movieFrm = tk.Frame(self.wrpFrm)
@@ -77,32 +77,35 @@ class CovidApp(tk.Tk):
 
         #--------------------------------------------------------------------------
         ### 初期設定frame ###
-        self.frame1 = tk.Frame()
+        self.frame1 = tk.Frame(self)
         self.frame1.configure(bg="white")
         self.frame1.grid(row=0, column=0, sticky="nsew")
 
         ### カメラのIP入力
-        self.ip_label = tk.Label(self.frame1, text="カメラのIPアドレスを入力", font=("", '30'))
-        self.ip_label.grid(row=0, column=0)
-        self.ip_entry = tk.Entry(self.frame1,width=20)
-        self.ip_entry.grid(row=0,column=1)
+        self.ip_camera = tkk.Label(self.frame1)
+        self.ip_camera.configure(text="▽カメラのIPアドレスを入力▽",font=("",30),foreground="black", background="white")
+        self.ip_camera.place(x=180, y=10)
+        self.ip_entry = tkk.Entry(self.frame1)
+        self.ip_entry.place(x=300, y=80,width=200,height=30)
 
         ### 音ファイル選択
         self.s = tk.StringVar()
-        self.s.set('ファイル>>')
-        self.label1 = tk.Label(self.frame1, textvariable=self.s, font=("", '30'))
-        self.label1.grid(row=1, column=0)
+        self.s.set('音声ファイル')
+        self.label1 = tkk.Label(self.frame1)
+        self.label1.configure(textvariable=self.s, font=("", '30'),foreground="black", background="white")
+        self.label1.place(x=240, y=150)
+
         # 参照ファイルパス表示ラベルの作成
         self.file1 = tk.StringVar()
-        self.file1_entry = tk.Entry(self.frame1, textvariable=self.file1, width=50)
-        self.file1_entry.grid(row=1, column=1)
+        self.file1_entry = tkk.Entry(self.frame1, textvariable=self.file1, width=50)
+        self.file1_entry.place(x=350, y=200)
         # 参照ボタンの作成
-        self.button1 = tk.Button(self.frame1, text='参照', command=self.button1_clicked)
-        self.button1.grid(row=1, column=2)
+        self.button1 = tk.Button(self.frame1, text='参照', command=self.button1_clicked, font=("", '15'))
+        self.button1.place(x=500, y=150)
 
         # フレーム1からmainフレームに戻るボタン
-        self.back_button = tk.Button(self.frame1, text="検査開始", command=lambda : self.changePage(self.wrpFrm))
-        self.back_button.grid(row=2, column=0,sticky='news')
+        self.back_button = tk.Button(self.frame1,  text="検査開始", command=lambda:self.changePage(self.wrpFrm), font=("", '15'))
+        self.back_button.place(x=300, y=300)
         #main_frameを一番上に表示
         self.frame1.tkraise()
         #--------------------------------------------------------------------------
@@ -113,12 +116,10 @@ class CovidApp(tk.Tk):
         self.filepath = filedialog.askopenfilename(filetypes = fTyp,initialdir = iDir)
         self.file1.set(self.filepath)
 
-        
-
     def changePage(self, page):
         #入力値を得る
         self.ip_adress = self.ip_entry.get()
-        print("--------------------",str(self.ip_adress))
+        print("カメラのIPアドレス",str(self.ip_adress))
         print("音ファイル",str(self.filepath))
         '''
         画面遷移用の関数
@@ -203,7 +204,6 @@ class Detection():
         pos_box = []  #bboxの中心の座標を格納するlist
         for i in range(boxes.size(0)):
             box = boxes[i, :]
-            #cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4)
             pos_box.append([int((box[0]+box[2])/2), int((box[1]+box[3])/2)])
         #各bboxの中心同士の長さを計算
         #規定値より小さければ、線で結ぶ
@@ -212,21 +212,9 @@ class Detection():
                 box_distance  = (((box_1[0]-box_2[0])**2)+(box_1[1]-box_2[1])**2) ** 0.5
                 if box_distance < distance:
                     cv2.line(img, (box_1[0],box_1[1]),(box_2[0],box_2[1]),(0,255,0),1)
-                    cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4) 
+                    cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (0, 255, 0), 4) 
                 else:
-                    cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (255, 0, 0), 4)
-            # if self.class_names[labels[i]] =='safe':
-            #     label = 'safe' +  f": {probs[i]:.2f}"
-            #     cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 4)
-            #     cv2.rectangle(img, (box[0], box[1]), (box[2], box[1]+(box[3]-box[1])//6), (0, 255, 0), -1)
-            #     cv2.putText(img, label,(box[0]+10, box[1]+30),cv2.FONT_HERSHEY_SIMPLEX,1,(0, 0, 0),2) 
-            # elif self.class_names[labels[i]] =='danger':
-            #     label = 'Danger' +  f": {probs[i]:.2f}"
-            #     cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 4)
-            #     cv2.rectangle(img, (box[0], box[1]), (box[2], box[1]+(box[3]-box[1])//6), (0, 0, 255), -1)
-            #     cv2.putText(img, label,(box[0]+10, box[1]+30),cv2.FONT_HERSHEY_SIMPLEX,1,(0, 0, 0),2)
-        #cv2.putText(img, '検出人数:'+str(boxes.size(0)),(10,30),cv2.FONT_HERSHEY_SIMPLEX,1,(255, 255, 255),2)
-        print('eval_frame終了')
+                    cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 4)
 
         return (img,boxes.size(0))
 
