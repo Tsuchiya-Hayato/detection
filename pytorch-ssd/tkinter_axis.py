@@ -206,18 +206,18 @@ class Detection():
             box_1 = boxes[i, :]
             box_1x = int((box_1[0]+box_1[2])/2)
             box_1y = int((box_1[1]+box_1[3])/2)
+            cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (0, 255, 0), 3) #検出したものを一度全て緑に
             for j in range(boxes.size(0)):
                 box_2 = boxes[j, :]
                 box_2x = int((box_2[0]+box_2[2])/2)
                 box_2y = int((box_2[1]+box_2[3])/2)
                 box_distance  = (((box_1x - box_2x)**2)+(box_1y-box_2y)**2) ** 0.5
-
-                if (i == j) & (box_distance < distance):
-                    cv2.line(img, (box_1[0],box_1[1]),(box_2[0],box_2[1]),(0,255,0),1)
-                    cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (0, 255, 0), 4)
-                else:
-                    cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 4)
-
+                print(box_distance)
+                if (i != j) & (box_distance < distance*20): #対象のモノを赤に
+                    cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
+                    cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
+                    cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
+                
         return (img,boxes.size(0))
 
 if __name__ == "__main__":
