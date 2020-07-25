@@ -9,6 +9,7 @@ import os
 import PIL.Image, PIL.ImageTk
 from vision.ssd.mobilenetv1_ssd import create_mobilenetv1_ssd, create_mobilenetv1_ssd_predictor
 from vision.utils.misc import Timer
+from playsound import playsound
 
 # アプリのクラスを作成
 class CovidApp(tk.Tk):
@@ -140,7 +141,7 @@ class CovidApp(tk.Tk):
         thresh_scale = self.scale_model.get()
         try:
             ret, frame = self.cap.get_frame()
-            frame,cnt = self.detection.eval_frame(frame,distance_scale,thresh_scale)
+            frame,cnt = self.detection.eval_frame(frame,distance_scale,thresh_scale,self.music_adress)
             self.person_count.configure(text=("検出人数："+str(cnt)+'人'),font=("",30),foreground="black", background="white")
         except:
             print('update失敗')
@@ -199,8 +200,7 @@ class Detection():
         self.predictor = create_mobilenetv1_ssd_predictor(net, candidate_size=200)
         print('Detection_init読み込み終了')
 
-
-    def eval_frame(self,img,distance,threshold): #(画像、box間の距離閾値、モデル閾値)
+    def eval_frame(self,img,distance,threshold,music_path): #(画像、box間の距離閾値、モデル閾値)
         boxes, labels, probs = self.predictor.predict(img,10,threshold)
         for i in range(boxes.size(0)):
             box_1 = boxes[i, :]
@@ -217,8 +217,11 @@ class Detection():
                     cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
                     cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
                     cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
-                
+                    playsound(music_path)
+
         return (img,boxes.size(0))
+
+        
 
 if __name__ == "__main__":
     app = CovidApp()
