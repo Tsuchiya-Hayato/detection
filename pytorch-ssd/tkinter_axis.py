@@ -167,7 +167,7 @@ class VideoCapture:
         #カメラの画面サイズ取得
         self.width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)    
-    
+        
     # 画像フレームの取得関数
     def get_frame(self):
         
@@ -193,14 +193,13 @@ class Detection():
         self.class_names = [name.strip() for name in open(label_path).readlines()]
         net = create_mobilenetv1_ssd(len(self.class_names), is_test=True)
         net.load(model_path)
-        
         self.predictor = create_mobilenetv1_ssd_predictor(net, candidate_size=200)
-        print('Detection_init読み込み終了')
-
+        self.alert_sum = 0
     def eval_frame(self,img,distance,threshold,music_path): #(画像、box間の距離閾値、モデル閾値)
         boxes, labels, probs = self.predictor.predict(img,10,threshold)
 
         for i in range(boxes.size(0)):
+            cnt = 0
             box_1 = boxes[i, :]
             box_1x = int((box_1[0]+box_1[2])/2)
             box_1y = int((box_1[1]+box_1[3])/2)
@@ -213,10 +212,15 @@ class Detection():
                 box_distance = box_distance / (800**2 + 680**2) ** 0.5
                 print(box_distance)
                 if (i != j) & (box_distance < distance): #対象のモノを赤に
+                    cnt = 1
                     cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
                     cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
                     cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
-                    playsound(music_path)
+            alert_sum += cnt
+            if self.alert_sum == 3:
+                playsound(music_path)
+                self.alert_sum  = 0 
+            
 
         return (img,boxes.size(0))
 
