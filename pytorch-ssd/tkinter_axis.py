@@ -62,8 +62,8 @@ class CovidApp(tk.Tk):
         self.eval_density = tkk.Label(self.threshhold)
         self.eval_density.configure(text="密集閾値",font=("",25),foreground="black", background="white")
         self.eval_density.grid(row=0, column=0, sticky="nsew")
-        self.var_distance = tk.IntVar(master=self.threshhold,value=3)
-        self.scale_distace = tk.Scale(master=self.threshhold, orient="h",variable=self.var_distance,from_=1, to=10,length=250)
+        self.var_distance = tk.DoubleVar(master=self.threshhold,value=0.5,)
+        self.scale_distace = tk.Scale(master=self.threshhold, orient="h",variable=self.var_distance,from_=0.05, to=0.2,length=250, resolution=0.01)
         self.scale_distace.grid(row=1, column=0, sticky="nsew")
 
         # モデル推論の閾値スライダー #
@@ -71,7 +71,7 @@ class CovidApp(tk.Tk):
         self.eval_model.configure(text="モデル判定閾値",font=("",25),foreground="black", background="white")
         self.eval_model.grid(row=0, column=2, sticky="nsew",padx=40)
         self.var_model = tk.DoubleVar(master=self.threshhold,value=0.5,)
-        self.scale_model = tk.Scale(master=self.threshhold, orient="h",variable=self.var_model,from_=0, to=1,length=250, resolution=0.1)
+        self.scale_model = tk.Scale(master=self.threshhold, orient="h",variable=self.var_model,from_=0.1, to=0.9,length=250, resolution=0.1)
         self.scale_model.grid(row=1, column=2, sticky="nsew",padx=40)
 
 
@@ -155,9 +155,6 @@ class CovidApp(tk.Tk):
         # 100ミリ秒ごとにupdate関数を実行
         self.after(300,self.update)
         
-        
-        
-        
 # 動画取得用のクラスを作成
 class VideoCapture:
     def __init__(self):
@@ -202,6 +199,7 @@ class Detection():
 
     def eval_frame(self,img,distance,threshold,music_path): #(画像、box間の距離閾値、モデル閾値)
         boxes, labels, probs = self.predictor.predict(img,10,threshold)
+
         for i in range(boxes.size(0)):
             box_1 = boxes[i, :]
             box_1x = int((box_1[0]+box_1[2])/2)
@@ -212,8 +210,9 @@ class Detection():
                 box_2x = int((box_2[0]+box_2[2])/2)
                 box_2y = int((box_2[1]+box_2[3])/2)
                 box_distance  = (((box_1x - box_2x)**2)+(box_1y-box_2y)**2) ** 0.5
+                box_distance = box_distance / (800**2 + 680**2) ** 0.5
                 print(box_distance)
-                if (i != j) & (box_distance < distance*20): #対象のモノを赤に
+                if (i != j) & (box_distance < distance): #対象のモノを赤に
                     cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
                     cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
                     cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
