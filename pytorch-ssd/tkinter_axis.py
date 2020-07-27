@@ -197,9 +197,9 @@ class Detection():
         self.alert_sum = 0
     def eval_frame(self,img,distance,threshold,music_path): #(画像、box間の距離閾値、モデル閾値)
         boxes, labels, probs = self.predictor.predict(img,10,threshold)
-
+        cnt = 0
         for i in range(boxes.size(0)):
-            cnt = 0
+            
             box_1 = boxes[i, :]
             box_1x = int((box_1[0]+box_1[2])/2)
             box_1y = int((box_1[1]+box_1[3])/2)
@@ -216,10 +216,11 @@ class Detection():
                     cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
                     cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
                     cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
-            alert_sum += cnt
-            if self.alert_sum == 3:
-                playsound(music_path)
-                self.alert_sum  = 0 
+        self.alert_sum += cnt
+        if self.alert_sum == 3:
+           #playsound(music_path)
+            print('アラート')
+            self.alert_sum = 0 
             
 
         return (img,boxes.size(0))
