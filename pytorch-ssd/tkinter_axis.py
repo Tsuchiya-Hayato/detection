@@ -10,6 +10,8 @@ import PIL.Image, PIL.ImageTk
 from vision.ssd.mobilenetv1_ssd import create_mobilenetv1_ssd, create_mobilenetv1_ssd_predictor
 from vision.utils.misc import Timer
 from playsound import playsound
+import subprocess
+import sys
 
 # アプリのクラスを作成
 class CovidApp(tk.Tk):
@@ -218,11 +220,9 @@ class Detection():
                     cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
         self.alert_sum += cnt
         if self.alert_sum == 3:
-           #playsound(music_path)
-            print('アラート')
+            subprocess.Popen(['python','alert.py',music_path])
             self.alert_sum = 0 
             
-
         return (img,boxes.size(0))
 
         

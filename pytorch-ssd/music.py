@@ -1,3 +1,8 @@
 from playsound import playsound
-def music(music_path):
-    playsound(music_path)
+import subprocess
+import sys
+path = 'ans_wav_000.wav'
+print('start')
+subprocess.Popen(['python','print.py',path])
+print('end')
+
