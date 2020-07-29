@@ -61,9 +61,9 @@ class CovidApp(tk.Tk):
         # 縦横ともに3pxの余白で、rootウィンドウいっぱいに配置
         self.threshhold.pack(padx=100, pady=1, fill="both", expand=1)
         # スライダーの作成 #
-        self.eval_density = tkk.Label(self.threshhold)
-        self.eval_density.configure(text="密集閾値",font=("",25),foreground="black", background="white")
-        self.eval_density.grid(row=0, column=0, sticky="nsew")
+        self.eval_slider = tkk.Label(self.threshhold)
+        self.eval_slider.configure(text="密集閾値",font=("",25),foreground="black", background="white")
+        self.eval_slider.grid(row=0, column=0, sticky="nsew")
         self.var_distance = tk.DoubleVar(master=self.threshhold,value=0.5,)
         self.scale_distace = tk.Scale(master=self.threshhold, orient="h",variable=self.var_distance,from_=0.05, to=0.2,length=250, resolution=0.01)
         self.scale_distace.grid(row=1, column=0, sticky="nsew")
@@ -143,8 +143,9 @@ class CovidApp(tk.Tk):
         thresh_scale = self.scale_model.get()
         try:
             ret, frame = self.cap.get_frame()
-            frame,cnt = self.detection.eval_frame(frame,distance_scale,thresh_scale,self.music_adress)
+            frame,cnt,cluster = self.detection.eval_frame(frame,distance_scale,thresh_scale,self.music_adress)
             self.person_count.configure(text=("検出人数："+str(cnt)+'人'),font=("",30),foreground="black", background="white")
+            self.eval_density.configure(text=("密集度　："+str(cluster)+"%"), font=("",30),foreground="black", background="white")
         except:
             print('update失敗')
             ret = False
@@ -200,6 +201,7 @@ class Detection():
     def eval_frame(self,img,distance,threshold,music_path): #(画像、box間の距離閾値、モデル閾値)
         boxes, labels, probs = self.predictor.predict(img,10,threshold)
         cnt = 0
+        sum_distance = 0
         for i in range(boxes.size(0)):
             
             box_1 = boxes[i, :]
@@ -207,23 +209,33 @@ class Detection():
             box_1y = int((box_1[1]+box_1[3])/2)
             cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (0, 255, 0), 3) #検出したものを一度全て緑に
             for j in range(boxes.size(0)):
-                box_2 = boxes[j, :]
-                box_2x = int((box_2[0]+box_2[2])/2)
-                box_2y = int((box_2[1]+box_2[3])/2)
-                box_distance  = (((box_1x - box_2x)**2)+(box_1y-box_2y)**2) ** 0.5
-                box_distance = box_distance / (800**2 + 680**2) ** 0.5
-                print(box_distance)
-                if (i != j) & (box_distance < distance): #対象のモノを赤に
-                    cnt = 1
-                    cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
-                    cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
-                    cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
+                if (i == j):
+                    break
+                else:
+                    box_2 = boxes[j, :]
+                    box_2x = int((box_2[0]+box_2[2])/2)
+                    box_2y = int((box_2[1]+box_2[3])/2)
+                    box_distance  = (((box_1x - box_2x)**2)+(box_1y-box_2y)**2) ** 0.5
+                    print("ボックス",box_distance)
+                    print("sum_distance",sum_distance)
+                    
+                    box_distance = box_distance / (800**2 + 680**2) ** 0.5
+                    sum_distance += int(1/(box_distance)) ** 2
+                    if box_distance < distance: #対象のモノを赤に
+                        cnt = 1
+                        cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
+                        cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
+                        cv2.rectangle(img, (box_2[0], box_2[1]), (box_2[2], box_2[3]), (255, 0, 0), 3)
+            
+        
         self.alert_sum += cnt
-        if self.alert_sum == 3:
+        if self.alert_sum == 10:
             subprocess.Popen(['python','alert.py',music_path])
             self.alert_sum = 0 
-            
-        return (img,boxes.size(0))
+
+        cluster = int((boxes.size(0) **2 + sum_distance) ** 0.5)
+        print("クラスタ",cluster)
+        return (img,boxes.size(0),cluster)
 
         
 
