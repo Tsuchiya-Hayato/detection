@@ -234,6 +234,8 @@ class Detection():
             self.alert_sum = 0 
 
         cluster = int((boxes.size(0) **2 + sum_distance) ** 0.5)
+        if cluster >= 100:
+            cluster = 100
         print("クラスタ",cluster)
         return (img,boxes.size(0),cluster)
 
