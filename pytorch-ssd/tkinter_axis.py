@@ -222,6 +222,7 @@ class Detection():
                     box_distance = box_distance / (800**2 + 680**2) ** 0.5
                     sum_distance += int(1/(box_distance)) ** 2
                     if box_distance < distance: #対象のモノを赤に
+                        sum_distance += int(0.5/(box_distance)) ** 2
                         cnt = 1
                         cv2.line(img, (box_1x,box_1y),(box_2x,box_2y),(255,0,0),2)
                         cv2.rectangle(img, (box_1[0], box_1[1]), (box_1[2], box_1[3]), (255, 0, 0), 3)
