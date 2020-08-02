@@ -17,6 +17,9 @@ import sys
 class CovidApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        #アイコン設定
+        iconfile = "./icon.ico"
+        self.iconbitmap(default=iconfile)
         # ウィンドウの名前
         self.title(u"Phoenix Covid")
         # ウィンドウのサイズ
@@ -43,7 +46,7 @@ class CovidApp(tk.Tk):
         self.person_count.grid(padx=100,row=0, column=0, sticky="nsew")
         #密集度を算出
         self.eval_density = tkk.Label(self.evalFrm)
-        self.eval_density.configure(text="密集度　：",font=("",30),foreground="black", background="white")
+        self.eval_density.configure(text="密集度　：",font=("",30),foreground="black", background="gold")
         self.eval_density.grid(padx=100,row=1, column=0, sticky="nsew")
 
         ### 動画表示フレームの作成 ###
@@ -92,25 +95,29 @@ class CovidApp(tk.Tk):
         self.ip_camera.pack(pady=1, expand=1)
         self.ip_entry = tkk.Entry(self.camera_frame, font=("",20))
         self.ip_entry.insert(0, "192.168.100")
-        self.ip_entry.pack(ipadx=25,ipady=10,pady=3, expand=1)
+        self.ip_entry.pack(ipadx=25,ipady=10,pady=1, expand=1)
 
         ### music入力
         self.music_frame = tk.Frame(self.frame1)
         self.music_frame.configure(bg="white")
-        self.music_frame.pack(padx=100, pady=1, fill="both", expand=1)
+        self.music_frame.pack(pady=1,padx=100, expand=1)
         # 音ファイル選択
         self.s = tk.StringVar()
         self.s.set('音声ファイルを指定')
         self.label1 = tkk.Label(self.music_frame)
         self.label1.configure(textvariable=self.s, font=("", '30'),foreground="black", background="white")
-        self.label1.pack(pady=3, expand=1)
+        self.label1.pack(pady=1,expand=1)
         # 参照ボタンの作成
         self.button1 = tk.Button(self.music_frame, text='ファイル選択', command=self.button1_clicked, font=("", 15))
-        self.button1.pack(pady=1, expand=1)
+        self.button1.pack(pady=1,expand=1)
         # 参照ファイルパス表示ラベルの作成
         self.music_file = tk.StringVar()
         self.file1_entry = tkk.Entry(self.music_frame, textvariable=self.music_file, width=40, font=("",15))
-        self.file1_entry.pack(ipady=10, pady=3, expand=1)
+        self.file1_entry.pack(pady=1,ipady=10, expand=1)
+
+
+
+
         
         ### フレーム1からmainフレームに戻るボタン
         self.button_frame = tk.Frame(self.frame1)
