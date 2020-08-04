@@ -39,7 +39,7 @@ class CovidApp(tk.Tk):
         ### 評価結果フレームの作成 ###
         self.evalFrm = tk.Frame(self.wrpFrm)
         self.evalFrm.configure(bg="white")
-        self.evalFrm.pack(padx=100, pady=2, fill="both", expand=1)
+        self.evalFrm.pack(padx=100, pady=2)
         # 検出人数を表示
         self.person_count = tkk.Label(self.evalFrm)
         self.person_count.configure(text="検出人数：",font=("",30),foreground="black", background="white")
@@ -57,7 +57,7 @@ class CovidApp(tk.Tk):
         ### 動画表示フレームの作成 ###
         self.movieFrm = tk.Frame(self.wrpFrm)
         self.movieFrm.configure(bg="white")
-        self.movieFrm.pack(padx=100, pady=2, fill="both", expand=1)
+        self.movieFrm.pack(padx=100, pady=2, fill="both", expand=True)
         # 動画表示キャンパスの配置
         self.movie_canvas = tk.Canvas(self.movieFrm, width = self.cap.width, height = self.cap.height)
         self.movie_canvas.pack()
@@ -67,7 +67,7 @@ class CovidApp(tk.Tk):
         self.threshhold = tk.Frame(self.wrpFrm)
         self.threshhold.configure(bg="white")
         # 縦横ともに3pxの余白で、rootウィンドウいっぱいに配置
-        self.threshhold.pack(padx=100, pady=1, fill="both", expand=1)
+        self.threshhold.pack(padx=100, pady=1)
         # スライダーの作成 #
         self.eval_slider = tkk.Label(self.threshhold)
         self.eval_slider.configure(text="密集閾値",font=("",25),foreground="black", background="white")
