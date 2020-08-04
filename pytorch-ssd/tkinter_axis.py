@@ -71,18 +71,18 @@ class CovidApp(tk.Tk):
         # スライダーの作成 #
         self.eval_slider = tkk.Label(self.threshhold)
         self.eval_slider.configure(text="密集閾値",font=("",25),foreground="black", background="white")
-        self.eval_slider.grid(padx=40,row=0, column=0, sticky="nsew")
+        self.eval_slider.grid(padx=30,row=0, column=0, sticky="nsew")
         self.var_distance = tk.DoubleVar(master=self.threshhold,value=0.5,)
         self.scale_distace = tk.Scale(master=self.threshhold, orient="h",variable=self.var_distance,from_=0.05, to=0.2,length=250, resolution=0.01)
-        self.scale_distace.grid(padx=40,row=1, column=0, sticky="nsew")
+        self.scale_distace.grid(padx=30,row=1, column=0, sticky="nsew")
 
         # モデル推論の閾値スライダー #
         self.eval_model = tkk.Label(self.threshhold) 
         self.eval_model.configure(text="モデル判定閾値",font=("",25),foreground="black", background="white")
-        self.eval_model.grid(padx=40,row=0, column=1, sticky="nsew")
+        self.eval_model.grid(padx=30,row=0, column=1, sticky="nsew")
         self.var_model = tk.DoubleVar(master=self.threshhold,value=0.5,)
         self.scale_model = tk.Scale(master=self.threshhold, orient="h",variable=self.var_model,from_=0.1, to=0.9,length=250, resolution=0.1)
-        self.scale_model.grid(padx=40,row=1, column=1, sticky="nsew")
+        self.scale_model.grid(padx=30,row=1, column=1, sticky="nsew")
 
 
         #--------------------------------------------------------------------------
