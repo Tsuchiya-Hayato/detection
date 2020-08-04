@@ -57,7 +57,7 @@ class CovidApp(tk.Tk):
         ### 動画表示フレームの作成 ###
         self.movieFrm = tk.Frame(self.wrpFrm)
         self.movieFrm.configure(bg="white")
-        self.movieFrm.pack(padx=100, pady=2, fill="both", expand=True)
+        self.movieFrm.pack(padx=100, pady=2)
         # 動画表示キャンパスの配置
         self.movie_canvas = tk.Canvas(self.movieFrm, width = self.cap.width, height = self.cap.height)
         self.movie_canvas.pack()
