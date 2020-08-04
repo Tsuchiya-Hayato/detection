@@ -43,11 +43,16 @@ class CovidApp(tk.Tk):
         # 検出人数を表示
         self.person_count = tkk.Label(self.evalFrm)
         self.person_count.configure(text="検出人数：",font=("",30),foreground="black", background="white")
-        self.person_count.grid(padx=100,row=0, column=0, sticky="nsew")
+        self.person_count.grid(padx=40,row=0, column=0, sticky="nsew")
         #密集度を算出
         self.eval_density = tkk.Label(self.evalFrm)
         self.eval_density.configure(text="密集度　：",font=("",30),foreground="black", background="gold")
-        self.eval_density.grid(padx=100,row=1, column=0, sticky="nsew")
+        self.eval_density.grid(padx=40,row=1, column=0, sticky="nsew")
+        # 参照ボタンの作成
+        self.button_main = tk.Button(self.evalFrm,  text="設定に戻る", command=lambda:self.changePage(self.frame1), font=("", '15'))
+        self.button_main.grid(padx=140,row=1, column=3, sticky="nsew")
+
+
 
         ### 動画表示フレームの作成 ###
         self.movieFrm = tk.Frame(self.wrpFrm)
@@ -66,18 +71,18 @@ class CovidApp(tk.Tk):
         # スライダーの作成 #
         self.eval_slider = tkk.Label(self.threshhold)
         self.eval_slider.configure(text="密集閾値",font=("",25),foreground="black", background="white")
-        self.eval_slider.grid(row=0, column=0, sticky="nsew")
+        self.eval_slider.grid(padx=40,row=0, column=0, sticky="nsew")
         self.var_distance = tk.DoubleVar(master=self.threshhold,value=0.5,)
         self.scale_distace = tk.Scale(master=self.threshhold, orient="h",variable=self.var_distance,from_=0.05, to=0.2,length=250, resolution=0.01)
-        self.scale_distace.grid(row=1, column=0, sticky="nsew")
+        self.scale_distace.grid(padx=40,row=1, column=0, sticky="nsew")
 
         # モデル推論の閾値スライダー #
         self.eval_model = tkk.Label(self.threshhold) 
         self.eval_model.configure(text="モデル判定閾値",font=("",25),foreground="black", background="white")
-        self.eval_model.grid(row=0, column=2, sticky="nsew",padx=40)
+        self.eval_model.grid(padx=40,row=0, column=1, sticky="nsew")
         self.var_model = tk.DoubleVar(master=self.threshhold,value=0.5,)
         self.scale_model = tk.Scale(master=self.threshhold, orient="h",variable=self.var_model,from_=0.1, to=0.9,length=250, resolution=0.1)
-        self.scale_model.grid(row=1, column=2, sticky="nsew",padx=40)
+        self.scale_model.grid(padx=40,row=1, column=1, sticky="nsew")
 
 
         #--------------------------------------------------------------------------
@@ -116,9 +121,6 @@ class CovidApp(tk.Tk):
         self.file1_entry.pack(pady=1,ipady=10, expand=1)
 
 
-
-
-        
         ### フレーム1からmainフレームに戻るボタン
         self.button_frame = tk.Frame(self.frame1)
         self.button_frame.configure(bg="white")
@@ -136,13 +138,18 @@ class CovidApp(tk.Tk):
         self.music_file.set(self.filepath)
 
     def changePage(self, page):
-        #入力値を得る
-        self.ip_adress = self.ip_entry.get()
-        self.music_adress = self.music_file.get()
-        #画面遷移用の関数
-        page.tkraise()
-        # 更新作業
-        self.update()
+        if page == self.wrpFrm:
+            #入力値を得る
+            self.ip_adress = self.ip_entry.get()
+            self.music_adress = self.music_file.get()
+            #画面遷移用の関数
+            page.tkraise()
+            # 更新作業
+            self.update()
+        elif page == self.frame1:
+            page.tkraise()
+        
+        
 
     def update(self):
         #画面更新
@@ -152,7 +159,7 @@ class CovidApp(tk.Tk):
             ret, frame = self.cap.get_frame()
             frame,cnt,cluster = self.detection.eval_frame(frame,distance_scale,thresh_scale,self.music_adress)
             self.person_count.configure(text=("検出人数："+str(cnt)+'人'),font=("",30),foreground="black", background="white")
-            self.eval_density.configure(text=("密集度　："+str(cluster)+"%"), font=("",30),foreground="black", background="white")
+            self.eval_density.configure(text=("密集度　 ："+str(cluster)+"％"), font=("",30),foreground="black", background="white")
         except:
             print('update失敗')
             ret = False
