@@ -131,12 +131,14 @@ class CovidApp(tk.Tk):
         ### main_frameを一番上に表示
         self.frame1.tkraise()
 
+    ### カメラIP、音声ファイルを変数に格納
     def button1_clicked(self):
         fTyp = [("","*")]
         iDir = os.path.abspath(os.path.dirname(__file__))
         self.filepath = filedialog.askopenfilename(filetypes = fTyp,initialdir = iDir)
         self.music_file.set(self.filepath)
 
+    ### ページ遷移用の関数
     def changePage(self, page):
         if page == self.wrpFrm:
             #入力値を得る
