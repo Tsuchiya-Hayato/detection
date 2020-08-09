@@ -102,7 +102,7 @@ class CovidApp(tk.Tk):
         self.ip_entry.insert(0, "192.168.100")
         self.ip_entry.pack(ipadx=25,ipady=10,pady=1, expand=1)
 
-        ### music入力
+        ### alert用の音声パスを取得
         self.music_frame = tk.Frame(self.frame1)
         self.music_frame.configure(bg="white")
         self.music_frame.pack(pady=1,padx=100, expand=1)
